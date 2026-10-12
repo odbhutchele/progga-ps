@@ -2,6 +2,9 @@ import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import TableSearch from "@/components/TableSearch";
 import StudentFilters from "@/components/StudentFilters";
+import Table from "@/components/Table";
+import ClickableRow from "@/components/ClickableRow";
+import StudentActionCell from "@/components/StudentActionCell";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Pencil } from "lucide-react";
@@ -22,51 +25,108 @@ const StudentListPage = async ({
 }) => {
   const { role } = await auth();
 
-  const renderCard = (item: StudentList) => (
-    <div key={item.id} className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 flex flex-col gap-4 h-full relative group">
-      <Link href={`/list/students/${item.id}`} className="absolute inset-0 z-0 rounded-2xl" />
-      
-      {/* Top Section: Photo and Basic Info */}
-      <div className="flex gap-4 relative z-10 pointer-events-none">
-        <div className="w-24 h-24 rounded-md overflow-hidden bg-white flex-shrink-0 relative shadow-sm border border-gray-200">
-          <Image
-            src={item.img || "/noAvatar.png"}
-            alt=""
-            fill
-            className="object-contain p-1"
-          />
-        </div>
-        <div className="flex flex-col justify-center flex-1">
-          <h3 className="font-bold text-lg text-gray-800">{item.name} {item.surname}</h3>
-          <span className="text-xs font-medium text-blue-600 bg-blue-50 w-max px-2.5 py-1 rounded-full mt-1 border border-blue-100">Class {item.class.name}</span>
-          <p className="text-xs text-gray-400 mt-2 font-mono">ID: {item.studentId}</p>
-        </div>
-      </div>
+  const columns = [
+    {
+      header: "Roll",
+      accessor: "rollNo",
+      className: "w-20",
+    },
+    {
+      header: "Student",
+      accessor: "info",
+    },
+    {
+      header: "Student ID",
+      accessor: "studentId",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Class",
+      accessor: "class",
+      className: "hidden sm:table-cell",
+    },
+    {
+      header: "Phone",
+      accessor: "phone",
+      className: "hidden lg:table-cell",
+    },
+    ...(role === "admin"
+      ? [
+          {
+            header: "Actions",
+            accessor: "action",
+            className: "text-right pr-6",
+          },
+        ]
+      : []),
+  ];
 
-      {/* Actions Menu */}
-      {role === "admin" && (
-        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-          <Link href={`/list/students/${item.id}/edit`} className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors shadow-sm">
-            <Pencil size={14} />
-          </Link>
-          <div>
-            <FormContainer table="student" type="delete" id={item.id} />
+  const renderRow = (item: StudentList) => (
+    <ClickableRow
+      key={item.id}
+      href={`/list/students/${item.id}`}
+      className="text-sm hover:bg-blue-50 transition-colors"
+    >
+      <td className="px-5 py-4 font-semibold text-slate-700">
+        {item.rollNo != null ? (
+          <span className="inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-lg bg-slate-100 text-slate-800 text-xs font-bold font-mono">
+            {item.rollNo}
+          </span>
+        ) : (
+          <span className="text-slate-300 text-xs font-mono">—</span>
+        )}
+      </td>
+      <td className="px-5 py-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 flex-shrink-0 relative border border-slate-200">
+            <Image
+              src={item.img || "/noAvatar.png"}
+              alt=""
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-semibold text-slate-800">
+              {item.name} {item.surname}
+            </span>
+            {item.nameBn && (
+              <span className="text-xs text-slate-400">{item.nameBn}</span>
+            )}
           </div>
         </div>
+      </td>
+      <td className="hidden md:table-cell px-5 py-4 text-xs font-mono text-slate-600">
+        {item.studentId}
+      </td>
+      <td className="hidden sm:table-cell px-5 py-4">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-blue-100">
+            Class {item.class.name}
+          </span>
+          {item.section && (
+            <span className="bg-slate-100 text-slate-600 text-xs font-medium px-2 py-0.5 rounded-full">
+              Sec: {item.section}
+            </span>
+          )}
+        </div>
+      </td>
+      <td className="hidden lg:table-cell px-5 py-4 text-sm text-slate-600">
+        {item.phone || item.guardianPhone || item.fatherPhone || "—"}
+      </td>
+      {role === "admin" && (
+        <StudentActionCell className="text-right pr-6">
+          <Link
+            href={`/list/students/${item.id}/edit`}
+            className="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+            title="Edit"
+          >
+            <Pencil size={13} />
+          </Link>
+          <FormContainer table="student" type="delete" id={item.id} />
+        </StudentActionCell>
       )}
-
-      {/* Bottom Section: Contact Details */}
-      <div className="grid grid-cols-2 gap-y-2 gap-x-4 pt-4 border-t border-gray-50 text-sm mt-auto relative z-10 pointer-events-none">
-        <div className="flex flex-col">
-          <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">Phone</span>
-          <span className="text-gray-700 truncate font-medium mt-0.5">{item.phone || "—"}</span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">Address</span>
-          <span className="text-gray-700 truncate font-medium mt-0.5">{item.address || "—"}</span>
-        </div>
-      </div>
-    </div>
+    </ClickableRow>
   );
 
   const { page, ...queryParams } = searchParams;
@@ -101,25 +161,45 @@ const StudentListPage = async ({
     }
   }
 
+  const isClassFiltered = query.classId !== undefined;
+
+  const orderByClause: Prisma.StudentOrderByWithRelationInput[] = isClassFiltered
+    ? [
+        { rollNo: { sort: "asc", nulls: "last" } },
+        { name: "asc" },
+      ]
+    : [
+        { class: { name: "asc" } },
+        { rollNo: { sort: "asc", nulls: "last" } },
+        { name: "asc" },
+      ];
+
+  const findManyArgs: Prisma.StudentFindManyArgs = {
+    where: query,
+    include: { class: true },
+    orderBy: orderByClause,
+    ...(isClassFiltered ? {} : { take: ITEM_PER_PAGE, skip: ITEM_PER_PAGE * (p - 1) }),
+  };
+
   const [data, count, allClasses] = await prisma.$transaction([
-    prisma.student.findMany({
-      where: query,
-      include: { class: true },
-      orderBy: [{ class: { name: "asc" } }, { name: "asc" }],
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
-    }),
+    prisma.student.findMany(findManyArgs),
     prisma.student.count({ where: query }),
     prisma.class.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
   ]);
+
+  const selectedClass = query.classId ? allClasses.find((c) => c.id === query.classId) : null;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-100 m-4 mt-0">
       {/* Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 p-5 border-b border-slate-100">
         <div>
-          <h1 className="text-lg font-semibold text-slate-800">All Students</h1>
-          <p className="text-xs text-slate-400 mt-0.5">{count} student{count !== 1 ? "s" : ""} total</p>
+          <h1 className="text-lg font-semibold text-slate-800">
+            {selectedClass ? `Class ${selectedClass.name} Students` : "All Students"}
+          </h1>
+          <p className="text-xs text-slate-400 mt-0.5">
+            {count} student{count !== 1 ? "s" : ""}{isClassFiltered ? " (sorted by roll)" : " total"}
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           <TableSearch />
@@ -136,20 +216,30 @@ const StudentListPage = async ({
         </div>
       </div>
 
-      {/* Grid */}
+      {/* Table */}
       {data.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <Image src="/noAvatar.png" alt="" width={48} height={48} className="mx-auto mb-3 opacity-30" />
           <p className="text-sm">No students found</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-5">
-          {data.map((item) => renderCard(item))}
+        <div className="p-5">
+          <Table columns={columns} renderRow={renderRow} data={data} />
         </div>
       )}
 
-      {/* Pagination */}
-      <Pagination page={p} count={count} />
+      {/* Pagination / Footer */}
+      {isClassFiltered ? (
+        count > 0 && (
+          <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span>
+              Showing all {count} student{count !== 1 ? "s" : ""} in Class {selectedClass?.name} (sorted by roll)
+            </span>
+          </div>
+        )
+      ) : (
+        <Pagination page={p} count={count} />
+      )}
     </div>
   );
 };

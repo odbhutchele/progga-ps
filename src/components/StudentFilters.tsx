@@ -23,12 +23,12 @@ export default function StudentFilters({ classes }: { classes: ClassOption[] }) 
     <select
       onChange={handleClassChange}
       defaultValue={params.get("classId") ?? ""}
-      className="text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-lamaSky"
+      className="text-sm border border-slate-200 rounded-xl px-3 py-2 bg-white text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
     >
       <option value="">All Classes</option>
       {classes.map((cls) => (
         <option key={cls.id} value={cls.id}>
-          {cls.name}
+          {cls.name.toLowerCase().startsWith("class") ? cls.name : `Class ${cls.name}`}
         </option>
       ))}
     </select>
