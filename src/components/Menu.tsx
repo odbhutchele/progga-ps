@@ -39,6 +39,7 @@ const menuItems: {
       { icon: "Banknote", label: "Collect Fees", href: "/fees/collect", visible: ["admin"] },
       { icon: "ClipboardList", label: "Admission Fees", href: "/fees/admission-fees", visible: ["admin"] },
       { icon: "BookOpen", label: "Ledger", href: "/fees/ledger", visible: ["admin", "student", "teacher"] },
+      { icon: "ReceiptText", label: "Expenses", href: "/fees/expenses", visible: ["admin"] },
       { icon: "Boxes", label: "Inventory", href: "/inventory", visible: ["admin"] },
       { icon: "PieChart", label: "Finance Reports", href: "/fees/reports", visible: ["admin"] },
       { icon: "Receipt", label: "Salary Billing", href: "/salaries/billing", visible: ["admin"] },

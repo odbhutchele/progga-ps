@@ -3,7 +3,6 @@ import { auth } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import FinanceChart from "@/components/FinanceChart";
-import ExpenseForm from "./ExpenseForm";
 import DeleteExpenseBtn from "./DeleteExpenseBtn";
 import PrintButton from "@/components/PrintButton";
 import {
@@ -745,79 +744,68 @@ export default async function FinanceReportsPage({
         </div>
       </div>
 
-      {/* CHART & EXPENSE MANAGEMENT GRID (SCREEN ONLY) */}
-      <div className="grid gap-6 lg:grid-cols-3 print:hidden">
-        {/* CHART AND EXPENSE TABLE */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* FINANCE CHART */}
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm h-96">
-            <FinanceChart data={chartData} />
-          </div>
+      {/* FULL WIDTH FINANCE CHART (SCREEN ONLY) */}
+      <div className="w-full bg-white p-6 rounded-2xl border border-slate-200 shadow-sm min-h-[380px] print:hidden">
+        <FinanceChart data={chartData} />
+      </div>
 
-          {/* RECENT OPERATIONAL EXPENSES TABULAR LEDGER */}
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4">
-            <div>
-              <h2 className="text-sm font-bold text-gray-800">Operational Expenditure Logs</h2>
-              <p className="text-xs text-gray-500 mt-0.5">Direct school expenditures logged during {currentYear}.</p>
-            </div>
-
-            {expenses.length === 0 ? (
-              <p className="text-xs text-gray-400 italic py-6 text-center">No school expenditures logged yet.</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50 text-gray-500 font-bold uppercase text-[9px] tracking-wider">
-                      <th className="p-3">Date</th>
-                      <th className="p-3">Title / Description</th>
-                      <th className="p-3">Category</th>
-                      <th className="p-3">Amount</th>
-                      <th className="p-3 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {expenses.map((exp) => (
-                      <tr key={exp.id} className="border-b border-gray-50 text-gray-700 hover:bg-slate-50/50 transition-colors">
-                        <td className="p-3 font-semibold text-gray-400">
-                          {new Date(exp.date).toLocaleDateString("en-GB", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </td>
-                        <td className="p-3 font-bold text-gray-800">{exp.title}</td>
-                        <td className="p-3 font-medium text-gray-400">
-                          <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[9px] uppercase font-bold">
-                            {exp.category}
-                          </span>
-                        </td>
-                        <td className="p-3 font-extrabold text-gray-900">৳{exp.amount.toLocaleString()}</td>
-                        <td className="p-3 text-right">
-                          <DeleteExpenseBtn id={exp.id} title={exp.title} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+      {/* FULL WIDTH OPERATIONAL EXPENDITURE LOGS (SCREEN ONLY) */}
+      <div className="w-full bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-4 print:hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <h2 className="text-base font-extrabold text-slate-800">Operational Expenditure Logs</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Direct school expenditures logged during {currentYear}.</p>
           </div>
+          <Link
+            href="/fees/expenses"
+            className="inline-flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-colors shadow-sm w-fit"
+          >
+            + Log / Manage Expenses
+          </Link>
         </div>
 
-        {/* EXPENSE INLINE FORM SIDEBAR */}
-        <div className="flex flex-col gap-6">
-          <ExpenseForm />
-
-          {/* HELP BANNER */}
-          <div className="bg-gradient-to-br from-[#f8fcf5] to-[#fcfefb] p-6 rounded-2xl border border-green-100 shadow-sm flex flex-col gap-3">
-            <h3 className="text-xs font-bold text-green-800 uppercase tracking-wider flex items-center gap-1.5">
-              📈 Live Ledger Audit Policy
-            </h3>
-            <p className="text-xs text-green-900/80 leading-relaxed">
-              Complete cash outflow incorporates operational expenses, faculty payroll distributions, and inventory purchases. All metrics update synchronously with the school ledger.
-            </p>
+        {expenses.length === 0 ? (
+          <p className="text-xs text-slate-400 italic py-8 text-center bg-slate-50 rounded-xl">
+            No school expenditures logged yet for {currentYear}.
+          </p>
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
+                  <th className="p-3">Date</th>
+                  <th className="p-3">Title / Description</th>
+                  <th className="p-3">Category</th>
+                  <th className="p-3">Amount</th>
+                  <th className="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {expenses.map((exp) => (
+                  <tr key={exp.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="p-3 font-medium text-slate-500 whitespace-nowrap">
+                      {new Date(exp.date).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td className="p-3 font-bold text-slate-800">{exp.title}</td>
+                    <td className="p-3">
+                      <span className="bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-0.5 rounded-full text-[9px] uppercase font-bold">
+                        {exp.category}
+                      </span>
+                    </td>
+                    <td className="p-3 font-extrabold text-slate-900">৳{exp.amount.toLocaleString()}</td>
+                    <td className="p-3 text-right">
+                      <DeleteExpenseBtn id={exp.id} title={exp.title} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

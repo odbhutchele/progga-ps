@@ -7,7 +7,7 @@ import {
   ClipboardList, CalendarClock, IdCard, FilePen, BarChart3,
   Trophy, UserCheck, Package, Banknote, BookOpen, PieChart,
   Receipt, Wallet, MessageSquare, Megaphone, Calendar,
-  UserCircle, Settings, LogOut, Boxes,
+  UserCircle, Settings, LogOut, Boxes, ReceiptText,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {
@@ -15,7 +15,7 @@ const iconMap: Record<string, React.ElementType> = {
   ClipboardList, CalendarClock, IdCard, FilePen, BarChart3,
   Trophy, UserCheck, Package, Banknote, BookOpen, PieChart,
   Receipt, Wallet, MessageSquare, Megaphone, Calendar,
-  UserCircle, Settings, LogOut, Boxes,
+  UserCircle, Settings, LogOut, Boxes, ReceiptText,
 };
 
 export default function NavLink({
