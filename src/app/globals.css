@@ -5,7 +5,17 @@
 html,
 body {
   height: 100%;
+  overflow: hidden;
 }
+
+@media print {
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
+
 
 .react-calendar {
   width: 100% !important;

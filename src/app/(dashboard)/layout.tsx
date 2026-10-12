@@ -12,7 +12,7 @@ export default function DashboardLayout({
 }>) {
   return (
     <SidebarProvider>
-      <div className="h-screen flex overflow-hidden">
+      <div className="h-full flex overflow-hidden">
         <SidebarDrawer>
           <div className="p-4">
             <Link
@@ -34,7 +34,7 @@ export default function DashboardLayout({
           </div>
         </SidebarDrawer>
 
-        <div className="flex-1 min-w-0 bg-slate-50 overflow-y-auto flex flex-col pb-8 print:overflow-visible print:pb-0">
+        <div className="flex-1 min-w-0 min-h-0 bg-slate-50 overflow-y-auto flex flex-col pb-8 print:overflow-visible print:pb-0">
           <Navbar />
           {children}
         </div>

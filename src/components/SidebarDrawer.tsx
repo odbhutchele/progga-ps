@@ -33,7 +33,7 @@ export default function SidebarDrawer({ children }: { children: React.ReactNode 
         className={`
           group/sidebar print:hidden
           fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 overflow-y-auto transition-transform duration-300
-          md:static md:translate-x-0 md:w-60 xl:w-64
+          md:static md:translate-x-0 md:w-60 xl:w-64 md:h-full md:min-h-0
           ${open ? "translate-x-0 mobile-open" : "-translate-x-full"}
         `}
       >
