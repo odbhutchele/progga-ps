@@ -75,7 +75,7 @@ export default async function MarksheetPage({
   const selectedSubject = subjects.find((s) => s.id.toString() === selectedSubjectId);
 
   return (
-    <div className="p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-6">
+    <div className="p-6 bg-[#f8fafe] flex-1 flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-extrabold text-gray-800 tracking-tight">Marksheet Entry</h1>
         <p className="text-sm text-gray-500 mt-0.5">

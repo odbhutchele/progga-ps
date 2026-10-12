@@ -299,7 +299,7 @@ export default async function FinanceReportsPage({
     : [];
 
   return (
-    <div className="p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-6">
+    <div className="p-6 bg-[#f8fafe] flex-1 flex flex-col gap-6">
       {/* PRINT-ONLY OFFICIAL HEADER */}
       {selectedMonthData && (
         <div className="hidden print:block text-center border-b-2 border-slate-900 pb-4 mb-4">

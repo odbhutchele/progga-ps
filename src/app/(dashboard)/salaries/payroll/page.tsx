@@ -58,7 +58,7 @@ export default async function PayrollPage({
     const totalUnpaid = unpaidSalaries.reduce((sum, s) => sum + s.amount, 0);
 
     return (
-      <div className="min-h-screen bg-[#f8fafe]">
+      <div className="flex-1 bg-[#f8fafe]">
         {/* Top bar */}
         <div className="bg-white border-b border-gray-100 px-6 py-3 flex items-center gap-3">
           <Link
@@ -154,7 +154,7 @@ export default async function PayrollPage({
   });
 
   return (
-    <div className="p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-5">
+    <div className="p-6 bg-[#f8fafe] flex-1 flex flex-col gap-5">
       <div>
         <h1 className="text-2xl font-extrabold text-gray-800 tracking-tight">Payroll Portal</h1>
         <p className="text-sm text-gray-500 mt-0.5">Select a teacher to view or process their salary.</p>

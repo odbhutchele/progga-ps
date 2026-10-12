@@ -119,7 +119,7 @@ export default async function RoutineViewPage({
   const showClassPicker = role === "admin" || role === "teacher";
 
   return (
-    <div className="p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-6">
+    <div className="p-6 bg-[#f8fafe] flex-1 flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold text-gray-800 tracking-tight">

@@ -82,7 +82,7 @@ export default async function ExpensesPage({
   ];
 
   return (
-    <div className="p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-6">
+    <div className="p-6 bg-[#f8fafe] flex-1 flex flex-col gap-6">
       {/* HEADER SECTION */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

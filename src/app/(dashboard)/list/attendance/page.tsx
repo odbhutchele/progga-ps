@@ -65,7 +65,7 @@ export default async function AttendancePage({ searchParams }: PageProps) {
     }
 
     return (
-      <div className="p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-6">
+      <div className="p-6 bg-[#f8fafe] flex-1 flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-extrabold text-gray-800 tracking-tight">Attendance Register</h1>
@@ -166,7 +166,7 @@ export default async function AttendancePage({ searchParams }: PageProps) {
     });
 
     return (
-      <div className="p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-6">
+      <div className="p-6 bg-[#f8fafe] flex-1 flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-extrabold text-gray-800 tracking-tight">Attendance Record</h1>

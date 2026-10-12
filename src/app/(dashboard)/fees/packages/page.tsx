@@ -43,7 +43,7 @@ export default async function FeePackagesPage() {
   }
 
   return (
-    <div className="p-6 flex flex-col lg:flex-row gap-6 min-h-screen bg-[#f8fafe]">
+    <div className="p-6 flex flex-col lg:flex-row gap-6 flex-1 bg-[#f8fafe]">
       {/* ── MAIN CONTENT ── */}
       <div className="flex-1 flex flex-col gap-8">
 

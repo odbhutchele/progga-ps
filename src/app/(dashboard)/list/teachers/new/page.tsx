@@ -14,7 +14,7 @@ export default async function NewTeacherPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex-1 flex flex-col bg-gray-50">
       <div className="bg-white border-b border-gray-100 px-6 py-3 flex items-center gap-3">
         <Link
           href="/list/teachers"

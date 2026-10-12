@@ -175,7 +175,7 @@ export default async function ReportCardsPage({
   const hasData = students.length > 0 && semesterExams.length > 0;
 
   return (
-    <div className="p-4 md:p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-6">
+    <div className="p-4 md:p-6 bg-[#f8fafe] flex-1 flex flex-col gap-6">
 
       {/* FILTER HEADER */}
       <div className="print:hidden flex flex-col gap-4">

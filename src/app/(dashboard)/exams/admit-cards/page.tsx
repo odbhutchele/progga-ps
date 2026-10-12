@@ -50,7 +50,7 @@ export default async function AdmitCardsPage({
   const year = new Date().getFullYear();
 
   return (
-    <div className="p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-6">
+    <div className="p-6 bg-[#f8fafe] flex-1 flex flex-col gap-6">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>

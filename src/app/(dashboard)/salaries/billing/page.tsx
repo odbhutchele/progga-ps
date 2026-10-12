@@ -45,7 +45,7 @@ export default async function SalaryBillingPage() {
   }
 
   return (
-    <div className="p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-8">
+    <div className="p-6 bg-[#f8fafe] flex-1 flex flex-col gap-8">
       {/* ── MONTHLY SALARY BILLING ── */}
       <div className="flex flex-col gap-4">
         <div>

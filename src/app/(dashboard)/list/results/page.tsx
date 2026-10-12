@@ -102,7 +102,7 @@ export default async function ResultsPage({
   const hasData = selectedExamId && selectedClassId;
 
   return (
-    <div className="p-4 md:p-6 bg-[#f8fafe] min-h-screen flex flex-col gap-6">
+    <div className="p-4 md:p-6 bg-[#f8fafe] flex-1 flex flex-col gap-6">
       {/* HEADER */}
       <div>
         <h1 className="text-2xl font-extrabold text-gray-800 tracking-tight">Class Results</h1>
