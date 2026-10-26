@@ -44,9 +44,9 @@ export default function ClassesPdfGenerator({
 
     // Header
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
+    doc.setFontSize(14.5);
     doc.setTextColor(...primaryColor);
-    doc.text("PROGGA PATHSHALA", 105, 14, { align: "center" });
+    doc.text("PROGGA PREPARATORY AND HIGH SCHOOL", 105, 14, { align: "center" });
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
@@ -182,7 +182,7 @@ export default function ClassesPdfGenerator({
         doc.setFontSize(7.5);
         doc.setTextColor(148, 163, 184);
         doc.text(
-          `Progga Pathshala Management System • Page ${data.pageNumber} of ${pageCount}`,
+          `Progga Preparatory and High School Management System • Page ${data.pageNumber} of ${pageCount}`,
           105,
           290,
           { align: "center" }
@@ -221,7 +221,7 @@ export default function ClassesPdfGenerator({
       doc.line(150, signY, 195, signY);
       doc.text("Principal / Headmaster", 172.5, signY + 5, { align: "center" });
 
-      doc.save(`Progga_Pathshala_Classes_Summary_${fileDate}.pdf`);
+      doc.save(`Progga_Preparatory_High_School_Classes_Summary_${fileDate}.pdf`);
     } catch (err) {
       console.error("Failed to generate PDF:", err);
     } finally {
@@ -302,7 +302,7 @@ export default function ClassesPdfGenerator({
               doc.setFontSize(7.5);
               doc.setTextColor(148, 163, 184);
               doc.text(
-                `Class ${cls.name} Roster • Progga Pathshala • Page ${data.pageNumber} of ${pageCount}`,
+                `Class ${cls.name} Roster • Progga Preparatory and High School • Page ${data.pageNumber} of ${pageCount}`,
                 105,
                 290,
                 { align: "center" }
@@ -312,7 +312,7 @@ export default function ClassesPdfGenerator({
         }
       });
 
-      doc.save(`Progga_Pathshala_Classes_Detailed_Rosters_${fileDate}.pdf`);
+      doc.save(`Progga_Preparatory_High_School_Classes_Detailed_Rosters_${fileDate}.pdf`);
     } catch (err) {
       console.error("Failed to generate detailed PDF:", err);
     } finally {
