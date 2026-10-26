@@ -13,6 +13,7 @@ import ClassesPrintView, { PrintableClass } from "./ClassesPrintView";
 
 type ClassList = Class & {
   supervisor: Teacher | null;
+  serialNumber?: number;
   _count: {
     students: number;
     subjects: number;
@@ -61,10 +62,11 @@ const ClassListPage = async ({
       : []),
   ];
 
-  const renderRow = (item: ClassList) => {
+  const renderRow = (item: ClassList, index?: number) => {
     const studentCount = item._count?.students || 0;
     const capacity = item.capacity || 0;
     const occupancyPercent = capacity > 0 ? Math.round((studentCount / capacity) * 100) : 0;
+    const serialNumber = item.serialNumber ?? ((p - 1) * ITEM_PER_PAGE + (index ?? 0) + 1);
 
     return (
       <tr
@@ -75,8 +77,8 @@ const ClassListPage = async ({
         <td className="p-4 font-semibold text-slate-800">
           <Link href={`/list/classes/${item.id}/students`} className="absolute inset-0" />
           <div className="flex items-center gap-3">
-            <span className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
-              {item.name}
+            <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 border border-blue-200/60 flex items-center justify-center font-bold text-xs shrink-0 font-mono">
+              {String(serialNumber).padStart(2, "0")}
             </span>
             <div className="flex flex-col">
               <span className="font-semibold text-slate-800">Class {item.name}</span>
@@ -258,7 +260,10 @@ const ClassListPage = async ({
     });
   };
 
-  const sortedData = sortClassNames(data);
+  const sortedData = sortClassNames(data).map((item, index) => ({
+    ...item,
+    serialNumber: (p - 1) * ITEM_PER_PAGE + index + 1,
+  }));
   const allClassesForPdf: PrintableClass[] = sortClassNames(rawAllClasses);
 
   // Summary KPI values
