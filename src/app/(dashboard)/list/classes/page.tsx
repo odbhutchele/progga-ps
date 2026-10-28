@@ -9,7 +9,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth-server";
 import { Users, School, BookOpen, Layers, Percent } from "lucide-react";
 import ClassesPdfGenerator from "./ClassesPdfGenerator";
-import ClassesPrintView, { PrintableClass } from "./ClassesPrintView";
+import { PrintableClass } from "./ClassesPrintView";
 
 type ClassList = Class & {
   supervisor: Teacher | null;
@@ -388,8 +388,6 @@ const ClassListPage = async ({
         </div>
       </div>
 
-      {/* PRINT-ONLY OFFICIAL VIEW */}
-      <ClassesPrintView classes={allClassesForPdf} />
     </>
   );
 };

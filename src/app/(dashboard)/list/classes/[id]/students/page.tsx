@@ -16,6 +16,8 @@ import {
   Layers,
   Filter,
 } from "lucide-react";
+import ClassesPdfGenerator from "../../ClassesPdfGenerator";
+import { PrintableClass } from "../../ClassesPrintView";
 
 const ClassStudentsPage = async ({
   params,
@@ -107,6 +109,33 @@ const ClassStudentsPage = async ({
       : 0;
   const availableSeats = Math.max(0, classRecord.capacity - enrolledCount);
 
+  const printableClass: PrintableClass = {
+    id: classRecord.id,
+    name: classRecord.name,
+    capacity: classRecord.capacity,
+    supervisor: classRecord.supervisor
+      ? {
+          id: classRecord.supervisor.id,
+          name: classRecord.supervisor.name,
+          surname: classRecord.supervisor.surname,
+          email: classRecord.supervisor.email,
+          phone: classRecord.supervisor.phone,
+        }
+      : null,
+    sections: classRecord.sections,
+    students: students.map((s) => ({
+      id: s.id,
+      studentId: s.studentId,
+      rollNo: s.rollNo,
+      name: s.name,
+      surname: s.surname,
+      sex: s.sex,
+      phone: s.phone,
+      section: s.sectionRelation?.name || s.section,
+    })),
+    _count: classRecord._count,
+  };
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm ring-1 ring-slate-100 m-4 mt-0">
       {/* Header */}
@@ -156,7 +185,11 @@ const ClassStudentsPage = async ({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center flex-wrap gap-2.5">
+          <ClassesPdfGenerator
+            classes={[printableClass]}
+            defaultClassId={classRecord.id}
+          />
           <Link
             href={`/list/students?classId=${classId}`}
             className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors"
