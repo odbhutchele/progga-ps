@@ -18,6 +18,30 @@ export const classSchema = z.object({
 
 export type ClassSchema = z.infer<typeof classSchema>;
 
+export const sectionSchema = z.object({
+  id: z.coerce.number().optional(),
+  name: z.string().min(1, { message: "Section name is required (e.g. A, B, Padma)" }),
+  capacity: z
+    .union([z.coerce.number().min(1), z.literal(""), z.undefined()])
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? undefined : Number(v))),
+  classId: z.coerce.number({ required_error: "Class is required!" }),
+  supervisorId: z
+    .string()
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? undefined : v)),
+});
+
+export type SectionSchema = z.infer<typeof sectionSchema>;
+
+export const mergeClassSchema = z.object({
+  sourceClassId: z.coerce.number({ required_error: "Source class is required!" }),
+  targetClassId: z.coerce.number({ required_error: "Target class is required!" }),
+  sectionName: z.string().min(1, { message: "Section name is required (e.g. A, B)" }),
+});
+
+export type MergeClassSchema = z.infer<typeof mergeClassSchema>;
+
 export const teacherSchema = z.object({
   id: z.string().optional(),
   password: z

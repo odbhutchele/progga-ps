@@ -5,7 +5,7 @@ import { Prisma, Subject, Teacher } from "@prisma/client";
 import Link from "next/link";
 import { auth } from "@/lib/auth-server";
 import { notFound } from "next/navigation";
-import { BookOpen, Users, ArrowLeft } from "lucide-react";
+import { BookOpen, Users, ArrowLeft, Layers } from "lucide-react";
 
 type SubjectList = Subject & { teachers: Teacher[] };
 
@@ -27,6 +27,7 @@ const ClassSubjectsPage = async ({
         select: {
           students: true,
           subjects: true,
+          sections: true,
         },
       },
     },
@@ -116,6 +117,13 @@ const ClassSubjectsPage = async ({
         >
           <Users className="w-4 h-4" />
           Students ({classRecord._count.students})
+        </Link>
+        <Link
+          href={`/list/classes/${classId}/sections`}
+          className="pb-3 px-4 text-sm font-semibold border-b-2 flex items-center gap-2 transition-colors border-transparent text-slate-500 hover:text-slate-700"
+        >
+          <Layers className="w-4 h-4" />
+          Sections ({classRecord._count.sections})
         </Link>
       </div>
 

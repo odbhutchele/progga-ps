@@ -11,6 +11,10 @@ export type PrintableClass = {
     email: string | null;
     phone: string | null;
   } | null;
+  sections?: {
+    id: number;
+    name: string;
+  }[];
   students?: {
     id: string;
     studentId: number;
@@ -19,6 +23,7 @@ export type PrintableClass = {
     surname: string;
     sex: string;
     phone: string | null;
+    section?: string | null;
   }[];
   subjects?: {
     id: number;
@@ -27,6 +32,7 @@ export type PrintableClass = {
   _count: {
     students: number;
     subjects: number;
+    sections?: number;
   };
 };
 

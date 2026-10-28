@@ -255,14 +255,26 @@ const StudentForm = ({
 
           {/* Section */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500">Section</label>
+            <label className="text-xs text-gray-500">
+              Section {classes?.some((c: any) => c.sections?.length > 0) && (
+                <span className="text-blue-600 font-medium">(select or type)</span>
+              )}
+            </label>
             <input
               type="text"
+              list="sections-datalist"
               placeholder="e.g. A, B, Science, Arts"
               className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
               {...register("section")}
               defaultValue={data?.section ?? ""}
             />
+            <datalist id="sections-datalist">
+              {classes?.flatMap((c: any) => c.sections || []).map((s: any) => (
+                <option key={s.id} value={s.name}>
+                  Section {s.name}
+                </option>
+              ))}
+            </datalist>
             {errors.section?.message && (
               <p className="text-xs text-red-400">{errors.section.message}</p>
             )}

@@ -2,6 +2,7 @@
 
 import {
   deleteClass,
+  deleteSection,
   deleteAnnouncement,
   deleteExam,
   deleteEvent,
@@ -22,6 +23,7 @@ import { FormContainerProps } from "./FormContainer";
 const deleteActionMap = {
   subject: deleteSubject,
   class: deleteClass,
+  section: deleteSection,
   teacher: deleteTeacher,
   student: deleteStudent,
   exam: deleteExam,
@@ -94,6 +96,9 @@ const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
 const ClassForm = dynamic(() => import("./forms/ClassForm"), {
   loading: () => <h1>Loading...</h1>,
 });
+const SectionForm = dynamic(() => import("./forms/SectionForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 const ExamForm = dynamic(() => import("./forms/ExamForm"), {
   loading: () => <h1>Loading...</h1>,
 });
@@ -117,6 +122,14 @@ const forms: {
   ),
   class: (setOpen, type, data, relatedData) => (
     <ClassForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  section: (setOpen, type, data, relatedData) => (
+    <SectionForm
       type={type}
       data={data}
       setOpen={setOpen}

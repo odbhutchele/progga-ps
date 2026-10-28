@@ -9,6 +9,8 @@ import {
   StudentSchema,
   SubjectSchema,
   TeacherSchema,
+  SectionSchema,
+  MergeClassSchema,
 } from "./formValidationSchemas";
 import { Day, Prisma } from "@prisma/client";
 import prisma from "./prisma";
@@ -210,6 +212,274 @@ export const deleteClass = async (
   } catch (err) {
     console.log(err);
     return { success: false, error: true };
+  }
+};
+
+export const createSection = async (
+  currentState: CurrentState,
+  data: SectionSchema
+) => {
+  if (!(await requireAdmin())) return unauthorizedAction();
+  try {
+    const trimmedName = data.name.trim();
+    const existing = await prisma.section.findUnique({
+      where: {
+        name_classId: {
+          name: trimmedName,
+          classId: data.classId,
+        },
+      },
+    });
+
+    if (existing) {
+      return {
+        success: false,
+        error: true,
+        message: `Section "${trimmedName}" already exists in this class.`,
+      };
+    }
+
+    const section = await prisma.section.create({
+      data: {
+        name: trimmedName,
+        capacity: data.capacity ?? null,
+        classId: data.classId,
+        supervisorId: data.supervisorId || null,
+      },
+    });
+
+    // Auto-link any existing students in this class whose string section matches this section name
+    await prisma.student.updateMany({
+      where: {
+        classId: data.classId,
+        section: { equals: trimmedName, mode: "insensitive" },
+      },
+      data: {
+        sectionId: section.id,
+        section: trimmedName,
+      },
+    });
+
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true, message: actionErrorMessage(err) };
+  }
+};
+
+export const updateSection = async (
+  currentState: CurrentState,
+  data: SectionSchema
+) => {
+  if (!(await requireAdmin())) return unauthorizedAction();
+  try {
+    if (!data.id) {
+      return { success: false, error: true, message: "Section ID is missing" };
+    }
+
+    const current = await prisma.section.findUnique({
+      where: { id: data.id },
+    });
+
+    if (!current) {
+      return { success: false, error: true, message: "Section not found." };
+    }
+
+    const trimmedName = data.name.trim();
+
+    await prisma.section.update({
+      where: { id: data.id },
+      data: {
+        name: trimmedName,
+        capacity: data.capacity ?? null,
+        supervisorId: data.supervisorId || null,
+      },
+    });
+
+    // If section name changed, keep student.section string in sync
+    if (current.name !== trimmedName) {
+      await prisma.student.updateMany({
+        where: { sectionId: data.id },
+        data: { section: trimmedName },
+      });
+    }
+
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true, message: actionErrorMessage(err) };
+  }
+};
+
+export const deleteSection = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  if (!(await requireAdmin())) return unauthorizedAction();
+  const id = data.get("id") as string;
+  try {
+    const secId = parseInt(id);
+    // Student sectionId becomes null via onDelete: SetNull
+    await prisma.section.delete({
+      where: { id: secId },
+    });
+
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true, message: actionErrorMessage(err) };
+  }
+};
+
+export const mergeClassIntoSection = async (
+  currentState: CurrentState,
+  data: MergeClassSchema
+) => {
+  if (!(await requireAdmin())) return unauthorizedAction();
+  const { sourceClassId, targetClassId, sectionName } = data;
+
+  if (sourceClassId === targetClassId) {
+    return {
+      success: false,
+      error: true,
+      message: "Source class and target class cannot be the same.",
+    };
+  }
+
+  try {
+    const trimmedSectionName = sectionName.trim();
+
+    await prisma.$transaction(async (tx) => {
+      // 1. Verify source and target classes exist
+      const sourceClass = await tx.class.findUnique({
+        where: { id: sourceClassId },
+        include: {
+          students: true,
+          subjects: true,
+        },
+      });
+
+      const targetClass = await tx.class.findUnique({
+        where: { id: targetClassId },
+        include: {
+          subjects: true,
+        },
+      });
+
+      if (!sourceClass || !targetClass) {
+        throw new Error("Source or target class was not found.");
+      }
+
+      // 2. Ensure or create target Section in target class
+      let targetSection = await tx.section.findUnique({
+        where: {
+          name_classId: {
+            name: trimmedSectionName,
+            classId: targetClassId,
+          },
+        },
+      });
+
+      if (!targetSection) {
+        targetSection = await tx.section.create({
+          data: {
+            name: trimmedSectionName,
+            classId: targetClassId,
+            capacity: sourceClass.capacity || null,
+            supervisorId: sourceClass.supervisorId || null,
+          },
+        });
+      }
+
+      // 3. Move all students to target class and link to the section
+      await tx.student.updateMany({
+        where: { classId: sourceClassId },
+        data: {
+          classId: targetClassId,
+          section: trimmedSectionName,
+          sectionId: targetSection.id,
+        },
+      });
+
+      // 4. Map subjects:
+      // If target class already has subject with the same name, re-link foreign keys
+      for (const srcSub of sourceClass.subjects) {
+        const targetMatchingSub = targetClass.subjects.find(
+          (ts) => ts.name.trim().toLowerCase() === srcSub.name.trim().toLowerCase()
+        );
+
+        if (targetMatchingSub) {
+          await tx.lesson.updateMany({
+            where: { subjectId: srcSub.id },
+            data: { subjectId: targetMatchingSub.id, classId: targetClassId },
+          });
+          await tx.examSchedule.updateMany({
+            where: { subjectId: srcSub.id },
+            data: { subjectId: targetMatchingSub.id, classId: targetClassId },
+          });
+          await tx.result.updateMany({
+            where: { subjectId: srcSub.id },
+            data: { subjectId: targetMatchingSub.id },
+          });
+          await tx.subject.delete({
+            where: { id: srcSub.id },
+          });
+        } else {
+          await tx.subject.update({
+            where: { id: srcSub.id },
+            data: { classId: targetClassId },
+          });
+        }
+      }
+
+      // 5. Move remaining class-level records to targetClass
+      await tx.lesson.updateMany({
+        where: { classId: sourceClassId },
+        data: { classId: targetClassId },
+      });
+      await tx.attendance.updateMany({
+        where: { classId: sourceClassId },
+        data: { classId: targetClassId },
+      });
+      await tx.event.updateMany({
+        where: { classId: sourceClassId },
+        data: { classId: targetClassId },
+      });
+      await tx.announcement.updateMany({
+        where: { classId: sourceClassId },
+        data: { classId: targetClassId },
+      });
+      await tx.notice.updateMany({
+        where: { classId: sourceClassId },
+        data: { classId: targetClassId },
+      });
+      await tx.feePackage.updateMany({
+        where: { classId: sourceClassId },
+        data: { classId: targetClassId },
+      });
+      await tx.examSchedule.updateMany({
+        where: { classId: sourceClassId },
+        data: { classId: targetClassId },
+      });
+
+      // 6. Delete empty source class
+      await tx.class.delete({
+        where: { id: sourceClassId },
+      });
+    });
+
+    return {
+      success: true,
+      error: false,
+      message: `Successfully merged class into Section "${trimmedSectionName}" with zero data loss!`,
+    };
+  } catch (err: any) {
+    console.error("Merge class error:", err);
+    return {
+      success: false,
+      error: true,
+      message: err.message || "Failed to merge class.",
+    };
   }
 };
 

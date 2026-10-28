@@ -96,6 +96,11 @@ export default function ClassesPdfGenerator({
     });
 
     // Classes Table
+    const totalSections = classes.reduce(
+      (sum, c) => sum + (c.sections?.length || c._count?.sections || 0),
+      0
+    );
+
     const tableData = classes.map((c, index) => {
       const enrolled = c._count?.students || 0;
       const capacity = c.capacity || 0;
@@ -104,11 +109,16 @@ export default function ClassesPdfGenerator({
       const supervisor = c.supervisor
         ? `${c.supervisor.name} ${c.supervisor.surname}${c.supervisor.phone ? ` (${c.supervisor.phone})` : ""}`
         : "—";
+      const sectionsStr =
+        c.sections && c.sections.length > 0
+          ? c.sections.map((s) => s.name).join(", ")
+          : "—";
 
       return [
         String(index + 1),
         `Class ${c.name}`,
         supervisor,
+        sectionsStr,
         String(capacity),
         String(enrolled),
         String(vacancy),
@@ -124,6 +134,7 @@ export default function ClassesPdfGenerator({
           "#",
           "Class Name",
           "Supervisor / Teacher In-Charge",
+          "Sections",
           "Capacity",
           "Enrolled Students",
           "Available Seats",
@@ -137,6 +148,7 @@ export default function ClassesPdfGenerator({
           "",
           "Grand Totals",
           `${classes.length} Classes`,
+          `${totalSections} Sec`,
           String(totalCapacity),
           `${totalStudents} Students`,
           `${totalVacancies} Seats`,
@@ -165,14 +177,15 @@ export default function ClassesPdfGenerator({
         halign: "center",
       },
       columnStyles: {
-        0: { halign: "center", cellWidth: 10 },
-        1: { halign: "left", fontStyle: "bold", cellWidth: 26 },
+        0: { halign: "center", cellWidth: 8 },
+        1: { halign: "left", fontStyle: "bold", cellWidth: 22 },
         2: { halign: "left" },
-        3: { halign: "center", cellWidth: 18 },
-        4: { halign: "center", cellWidth: 26, fontStyle: "bold" },
-        5: { halign: "center", cellWidth: 24 },
-        6: { halign: "center", cellWidth: 20 },
+        3: { halign: "center", cellWidth: 20 },
+        4: { halign: "center", cellWidth: 16 },
+        5: { halign: "center", cellWidth: 24, fontStyle: "bold" },
+        6: { halign: "center", cellWidth: 22 },
         7: { halign: "center", cellWidth: 18 },
+        8: { halign: "center", cellWidth: 16 },
       },
       alternateRowStyles: {
         fillColor: [248, 250, 252],
@@ -269,13 +282,14 @@ export default function ClassesPdfGenerator({
             s.rollNo != null ? String(s.rollNo).padStart(2, "0") : String(sIdx + 1).padStart(2, "0"),
             String(s.studentId),
             `${s.name} ${s.surname}`,
+            s.section ? `Sec ${s.section}` : "—",
             s.sex || "—",
             s.phone || "—",
           ]);
 
           autoTable(doc, {
             startY: 26,
-            head: [["Roll", "Student ID", "Student Name", "Gender", "Contact Phone"]],
+            head: [["Roll", "Student ID", "Student Name", "Section", "Gender", "Contact Phone"]],
             body: studentRows,
             theme: "striped",
             headStyles: {
@@ -291,11 +305,12 @@ export default function ClassesPdfGenerator({
               halign: "center",
             },
             columnStyles: {
-              0: { halign: "center", cellWidth: 16, fontStyle: "bold" },
-              1: { halign: "center", cellWidth: 28 },
+              0: { halign: "center", cellWidth: 14, fontStyle: "bold" },
+              1: { halign: "center", cellWidth: 26 },
               2: { halign: "left" },
-              3: { halign: "center", cellWidth: 24 },
-              4: { halign: "center", cellWidth: 32 },
+              3: { halign: "center", cellWidth: 18 },
+              4: { halign: "center", cellWidth: 20 },
+              5: { halign: "center", cellWidth: 28 },
             },
             didDrawPage: (data) => {
               const pageCount = (doc as any).internal.getNumberOfPages();

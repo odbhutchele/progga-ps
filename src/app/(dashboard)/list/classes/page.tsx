@@ -14,9 +14,11 @@ import ClassesPrintView, { PrintableClass } from "./ClassesPrintView";
 type ClassList = Class & {
   supervisor: Teacher | null;
   serialNumber?: number;
+  sections?: { id: number; name: string }[];
   _count: {
     students: number;
     subjects: number;
+    sections: number;
   };
 };
 
@@ -35,6 +37,11 @@ const ClassListPage = async ({
     {
       header: "Students",
       accessor: "students",
+    },
+    {
+      header: "Sections",
+      accessor: "sections",
+      className: "hidden sm:table-cell",
     },
     {
       header: "Capacity",
@@ -112,6 +119,22 @@ const ClassListPage = async ({
               {occupancyPercent}% full
             </span>
           </div>
+        </td>
+
+        {/* Sections */}
+        <td className="hidden sm:table-cell p-4 text-slate-600">
+          <Link
+            href={`/list/classes/${item.id}/sections`}
+            className="relative z-10 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-200 transition-colors"
+            title={`Manage sections for Class ${item.name}`}
+          >
+            <Layers className="w-3.5 h-3.5 text-slate-500" />
+            <span>
+              {item._count?.sections > 0
+                ? `${item._count.sections} ${item._count.sections === 1 ? "Section" : "Sections"}`
+                : "+ Add Section"}
+            </span>
+          </Link>
         </td>
 
         {/* Capacity */}
@@ -200,10 +223,15 @@ const ClassListPage = async ({
       where: query,
       include: {
         supervisor: true,
+        sections: {
+          select: { id: true, name: true },
+          orderBy: { name: "asc" },
+        },
         _count: {
           select: {
             students: true,
             subjects: true,
+            sections: true,
           },
         },
       },
@@ -222,6 +250,13 @@ const ClassListPage = async ({
             phone: true,
           },
         },
+        sections: {
+          select: {
+            id: true,
+            name: true,
+          },
+          orderBy: { name: "asc" },
+        },
         students: {
           select: {
             id: true,
@@ -231,6 +266,7 @@ const ClassListPage = async ({
             surname: true,
             sex: true,
             phone: true,
+            section: true,
           },
           orderBy: [{ rollNo: "asc" }, { name: "asc" }],
         },
@@ -244,6 +280,7 @@ const ClassListPage = async ({
           select: {
             students: true,
             subjects: true,
+            sections: true,
           },
         },
       },

@@ -25,6 +25,8 @@ model Student {
   bloodType        String
   sex              UserSex
   createdAt        DateTime        @default(now())
+  sectionId        Int?
+  sectionRelation  Section?        @relation(fields: [sectionId], references: [id], onDelete: SetNull)
   section          String?
   fatherName       String?
   motherName       String?
@@ -93,6 +95,7 @@ model Teacher {
   birthday          DateTime
   monthlySalary     Float?
   salaryCollections SalaryCollection[]
+  sections          Section[]
 }
 
 
@@ -112,6 +115,21 @@ model Class {
   subjects      Subject[]
   examSchedules ExamSchedule[]
   attendances   Attendance[]
+  sections      Section[]
+}
+
+model Section {
+  id           Int       @id @default(autoincrement())
+  name         String
+  capacity     Int?
+  classId      Int
+  class        Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  supervisorId String?
+  supervisor   Teacher?  @relation(fields: [supervisorId], references: [id])
+  students     Student[]
+  createdAt    DateTime  @default(now())
+
+  @@unique([name, classId])
 }
 
 model Subject {
